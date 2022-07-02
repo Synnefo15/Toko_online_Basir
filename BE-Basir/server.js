@@ -3,6 +3,10 @@ import products from './data/data_products.js';
 
 const app = express();
 
+app.get('/',(req,res) => { 
+	res.send(`Default Page`)
+ })
+
 app.get('/api/products', (req, res) => {
 	res.send(products);
 });
