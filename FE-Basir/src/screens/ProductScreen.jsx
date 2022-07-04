@@ -3,8 +3,12 @@ import { useParams } from 'react-router-dom';
 import { useReducer, useEffect } from 'react';
 import axios from 'axios';
 import { Row, Col, Card, ListGroup, Badge, Button, ListGroupItem } from 'react-bootstrap';
-import {Helmet} from 'react-helmet-async';
+import { Helmet } from 'react-helmet-async';
 import Rating from '../components/Rating';
+import cssModule from '../styles/produk_detail.module.css';
+import LoadingBox from '../components/LoadingBox';
+import MessageBox from '../components/MessageBox';
+import {getError} from '../utils/utils'
 
 const reducer = (state, action) => {
 	switch (action.type) {
@@ -33,7 +37,7 @@ const ProductScreen = () => {
 			const result = await axios.get(`/api/products/slug/${slug}`);
 			dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
 		} catch (error) {
-			dispatch({ type: 'FETCH_FAIL', payload: error.messages });
+			dispatch({ type: 'FETCH_FAIL', payload: getError(error) });
 		}
 		// setProducts(result.data);
 	};
@@ -41,14 +45,14 @@ const ProductScreen = () => {
 		fetchData();
 	}, [slug]);
 	return loading ? (
-		<div>Loading...</div>
+		<LoadingBox />
 	) : error ? (
-		<div>{error}</div>
+		<MessageBox variant="danger">{error}</MessageBox>
 	) : (
 		<div>
 			<Row>
 				<Col md={6}>
-					<img src={product.image} alt={product.name} className="img-large" />
+					<img src={product.image} alt={product.name} className={cssModule.imgLarge} />
 				</Col>
 				<Col md={3}>
 					<ListGroup variant="flush">
@@ -66,7 +70,7 @@ const ProductScreen = () => {
 							Description :<p>{product.description}</p>
 						</ListGroupItem>
 						<ListGroupItem>
-							<Row>
+							<Row className="">
 								<Col>Status :</Col>
 								<Col>
 									{product.countInStock > 0 ? (
@@ -81,7 +85,7 @@ const ProductScreen = () => {
 						{product.countInStock > 0 && (
 							<ListGroupItem>
 								<div className=" d-grid ">
-									<Button variant="primary tombol">Masukkan Keranjang</Button>
+									<Button variant={`primary ${cssModule.tombol}`}>Masukkan Keranjang</Button>
 								</div>
 							</ListGroupItem>
 						)}

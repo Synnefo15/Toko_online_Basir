@@ -1,0 +1,13 @@
+.imgLarge {
+	max-width: 100%;
+}
+
+.tombol {
+	border: none;
+}
+
+.tombol:hover {
+	background-color: yellow;
+	font-weight: 700;
+	color: black;
+}
