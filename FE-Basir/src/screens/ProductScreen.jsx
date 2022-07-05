@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useReducer, useEffect } from 'react';
 import axios from 'axios';
 import { Row, Col, Card, ListGroup, Badge, Button, ListGroupItem } from 'react-bootstrap';
@@ -25,6 +25,7 @@ const reducer = (state, action) => {
 };
 
 const ProductScreen = () => {
+	const navigate = useNavigate()
 	const params = useParams();
 	const { slug } = params;
 	const [{ loading, error, product }, dispatch] = useReducer(reducer, {
@@ -57,7 +58,8 @@ const ProductScreen = () => {
 			return;
 		}
 
-		ctxDispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
+		ctxDispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity }, });
+		navigate('/cart')
 	};
 
 	return loading ? (
@@ -101,7 +103,7 @@ const ProductScreen = () => {
 						{product.countInStock > 0 && (
 							<ListGroupItem>
 								<div className=" d-grid ">
-									<Button onClick={addToCart} variant={`primary ${cssModule.tombol}`}>
+									<Button onClick={addToCart} variant={`primary tombol`}>
 										Masukkan Keranjang
 									</Button>
 								</div>
