@@ -1,16 +1,35 @@
-import React, { useContext } from 'react'
-import { Helmet } from 'react-helmet-async'
-import { Store } from '../Store'
-import {Button, Card, Col, ListGroup, Row} from 'react-bootstrap';
+import React, { useContext } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { Store } from '../Store';
+import { Button, Card, Col, ListGroup, Row } from 'react-bootstrap';
 import MessageBox from '../components/MessageBox';
-import { Link } from 'react-router-dom';
+import { Link,  useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const CartScreen = () => {
-  const {state, dispatch: ctxDispatch}= useContext(Store)
-  const {
-    cart:{cartItems},
-  }=state
-  return (
+	const navigate = useNavigate()
+	const { state, dispatch: ctxDispatch } = useContext(Store);
+	const {
+		cart: { cartItems },
+	} = state;
+	const updateCart = async (item, quantity) => {
+		const { data } = await axios.get(`/api/products/${item._id}`);
+		if (data.countInStock < quantity) {
+			window.alert('Stok habis');
+			return;
+		}
+		ctxDispatch({
+			type: 'CART_ADD_ITEM',
+			payload: { ...item, quantity },
+		});
+	};
+	const removeItem = async (item) => {
+		ctxDispatch({type:'CART_REMOVE_ITEM', payload:item})
+	}
+	const checkoutButton = () => {
+		navigate('/signin?redirect=/shipping')
+	}
+	return (
 		<div>
 			<Helmet>
 				<title>Keranjang belanja</title>
@@ -32,24 +51,36 @@ const CartScreen = () => {
 												src={item.image}
 												alt={item.name}
 												className="img-fluid rounded img-thumbnail"
-                        style={{ "height":"80px" }}
+												style={{ height: '80px' }}
 											/>{' '}
 											<Link to={`/product/${item.slug}`}>{item.name}</Link>
 										</Col>
 										<Col md={3}>
-											<Button variant="light" disabled={item.quantity === 1}>
+											<Button
+												onClick={() => {
+													updateCart(item, item.quantity - 1);
+												}}
+												variant="light"
+												disabled={item.quantity === 1}
+											>
 												<i className="fas fa-minus-circle"></i>
 											</Button>
 											{` `}
 											<span>{item.quantity}</span>
 											{` `}
-											<Button variant="light" disabled={item.quantity === item.countInStock}>
+											<Button
+												onClick={(first) => {
+													updateCart(item, item.quantity + 1);
+												}}
+												variant="light"
+												disabled={item.quantity === item.countInStock}
+											>
 												<i className="fas fa-plus-circle"></i>
 											</Button>
 										</Col>
 										<Col md={3}>{item.price}</Col>
 										<Col md={2}>
-											<Button variant="light">
+											<Button onClick={() => { removeItem(item) }} variant="light">
 												<i className="fas fa-trash"></i>
 											</Button>
 										</Col>
@@ -73,7 +104,7 @@ const CartScreen = () => {
 							</ListGroup.Item>
 							<ListGroup.Item>
 								<div className="d-grid">
-									<Button type="button" variant="primary" disabled={cartItems.length === 0}>
+									<Button onClick={checkoutButton} type="button" variant="primary" disabled={cartItems.length === 0}>
 										Lanjut Checkout
 									</Button>
 								</div>
@@ -84,6 +115,6 @@ const CartScreen = () => {
 			</Row>
 		</div>
 	);
-}
+};
 
-export default CartScreen
+export default CartScreen;

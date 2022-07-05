@@ -88,6 +88,12 @@ const ProductScreen = () => {
 							Description :<p>{product.description}</p>
 						</ListGroupItem>
 						<ListGroupItem>
+							<div className="row">
+								<div className="col-md-6">Stok :</div>
+								<div className="col-md-4">{product.countInStock}</div>
+							</div>
+						</ListGroupItem>
+						<ListGroupItem>
 							<Row className="">
 								<Col>Status :</Col>
 								<Col>
